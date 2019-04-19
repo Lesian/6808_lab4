@@ -132,10 +132,14 @@ else:
             cv.Add(sector_maps[sector],sector_temp2[sector],sector_maps[sector])
             sector_temp[sector]=cv.CreateMat(height,width,cv.CV_8UC1)
             cv.SetZero(sector_temp[sector])
-
-    cv.Save(filename,themap)
+        
+    print("filename here:" + filename)
+    new_filename = "/Users/lesian/6808_lab4/" + filename
+    # cv.Save(filename,themap)
+    # cv.Save(new_filename,themap)
     for sector in range(8):
-        cv.Save("cache/n%d_c%d_s%d.xml"%(trip_max,cell_size,sector),sector_maps[sector])
+        #cv.Save("cache/n%d_c%d_s%d.xml"%(trip_max,cell_size,sector),sector_maps[sector])
+        pass
 
     lines = cv.CreateMat(height,width,cv.CV_8U)
     cv.SetZero(lines)

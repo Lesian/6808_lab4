@@ -123,11 +123,13 @@ def initialize_clusters(markers, distance_threshold, bearing_threshold):
 	location.
 	'''
         clusters = []
+	markers = markers[:]
+        index = Index(markers)
         while markers:
             random_marker = markers[random.randint(0, len(markers) - 1)]
             markers.remove(random_marker)
             
-            nearest_markers = Index(markers).nearby(random_marker, distance_threshold)
+            nearest_markers = index.nearby(random_marker, distance_threshold)
 
             nearest_markers = [marker for marker in  nearest_markers if marker.angle_to(random_marker) <= bearing_threshold]
 
@@ -196,19 +198,8 @@ def kmeans(markers, initial_clusters, distance_threshold, movement_threshold):
 		# your code here
                 for marker in markers:
                     nearby_clusters = cluster_index.nearby(marker, distance_threshold)
-
-                    if nearby_clusters:
-                        best_cluster = nearby_clusters[0]
-                        best_similarity = similarity_metric(best_cluster, marker)
-                        for cluster in nearby_clusters:
-                            similarity = similarity_metric(cluster, marker)
-                            if similarity < best_similarity:
-                                best_cluster = cluster
-                                best_similarity = similarity
-                        best_cluster.add_member(marker)
-
-                    else:
-                        print("Marker not within distance distance_threshold to any point")
+                    best_cluster = min(nearby_clusters, key= lambda cluster: similarity_metric(cluster, marker))
+                    best_cluster.add_member(marker)
 
 
 	clusters = initial_clusters
@@ -249,10 +240,10 @@ def generate_edges(graph, markers_by_trace, clusters):
 
         for trace_markers in markers_by_trace:
             for i in range(1, len(trace_markers)):
-                cluster_one = marker_cluster_map[trace_markers[i-1]]
-                cluster_two = marker_cluster_map[trace_markers[i]]
+                cluster_one = marker_cluster_map[trace_markers[i-1].id]
+                cluster_two = marker_cluster_map[trace_markers[i].id]
                 if cluster_one != cluster_two:
-                    graph.add(cluster_one.vertex, cluster_two.vertex)
+                    graph.add_edge(cluster_one.vertex, cluster_two.vertex)
 
 '''
 You can use the code below to run manually.
