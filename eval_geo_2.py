@@ -19,16 +19,10 @@ def get_nearest_vertex(vertex, graph):
 	return min(graph.vertices, key = lambda v: distance_btn_vertices(v, vertex))
 
 def get_pairs_from_graphs(actual, inferred):
-	actual_one = random.choice(actual.vertices)
-	actual_two = random.choice(actual.vertices)
-
+        actual_one = random.choice(actual.vertices)
+	actual_two = random.choice(actual.vertices)	
 	inferred_one = get_nearest_vertex(actual_one, inferred)
 	inferred_two = get_nearest_vertex(actual_two, inferred)
-        
-        print(actual_one.x, actual_one.y)
-	print(actual_two.x, actual_two.y)
-	print(inferred_one.x, inferred_one.y)
-	print(inferred_two.x, inferred_two.y)
 	return (actual_one, actual_two, inferred_one, inferred_two)
 
 
@@ -40,7 +34,7 @@ def shortest_path_distance(graph, src, dst):
 	
 	while current_vertex != dst:
 		visited.add(current_vertex)
-		destination_edges = [edge for edge in graph.edges if edge.src == current_vertex]
+		destination_edges = current_vertex.out_edges
 		weight_to_current_vertex = shortest_paths[current_vertex][1]
 
 		for edge in destination_edges:
@@ -54,17 +48,23 @@ def shortest_path_distance(graph, src, dst):
 
 		next_destination = {node: shortest_paths[node] for node in shortest_paths if node not in visited}
 		if not next_destination:
-			return 'route not possible'
+			return None
 
 		current_vertex = min(next_destination, key=lambda k: next_destination[k][1])
+	return (shortest_paths[dst][1])
 
-	return shortest_paths[current_vertex][1]
-
-for _ in range(100):
+match_count = 0
+total_count = 0
+for _ in range(1000):
 	actual_one, actual_two, inferred_one, inferred_two = get_pairs_from_graphs(actual, inferred)
 	actual_shortest_distance = shortest_path_distance(actual, actual_one, actual_two)
 	inferred_shortest_distance = shortest_path_distance(inferred, inferred_one, inferred_two)
-	print("inferred_distance: ", inferred_shortest_distance)
-	print("actual_distance: ", actual_shortest_distance)
-	print('\n')
-
+	if (actual_shortest_distance == None and infrerred_shortest_distance == None):
+		match_count += 1
+	elif (actual_shortest_distance == None or inferred_shortest_distance == None):
+		pass
+	elif (abs(actual_shortest_distance - inferred_shortest_distance) < 5):
+		match_count += 1
+	else:
+		pass
+print(float(match_count) / 1000)
